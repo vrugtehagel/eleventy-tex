@@ -1,4 +1,4 @@
-import { RenderPlugin } from "npm:@11ty/eleventy@^3.0.0-alpha.18";
+import { RenderPlugin } from "npm:@11ty/eleventy@^3.0.0-beta.1";
 import katex from "npm:katex@^0.16.11";
 
 import type { EleventyTeXOptions } from "./options.ts";
@@ -26,13 +26,13 @@ export function EleventyTeX(
 
   async function compile(
     content: string,
+    path: string,
   ): Promise<(data: any) => Promise<string>> {
     const render: (content: string) => Promise<string> = texTemplateEngine
       ? await RenderPlugin.String(content, texTemplateEngine)
       : (content: string) => Promise.resolve(content);
     return async (data: any): Promise<string> => {
       const input = await render(data);
-      console.log(input);
       let result = "";
       let lastCut = 0;
       for (let index = 0; index < input.length; index++) {
@@ -40,7 +40,6 @@ export function EleventyTeX(
           return input.startsWith(delimiter.start, index);
         });
         if (!delimiter) continue;
-        console.log(delimiter, index);
         if (input[index - 1] == "\\") {
           result += input.slice(lastCut, index - 1);
           lastCut = index;
@@ -48,7 +47,6 @@ export function EleventyTeX(
           continue;
         }
         result += input.slice(lastCut, index);
-        console.log("adding:", input.slice(lastCut, index));
         index += delimiter.start.length;
         let endIndex = index;
         do {
@@ -66,12 +64,15 @@ export function EleventyTeX(
         index = endIndex + delimiter.end.length;
         lastCut = index;
       }
-      console.log("adding", input.slice(lastCut));
       result += input.slice(lastCut);
-      return result;
+      if (!path.endsWith(`.md.${extension}`)) return result;
+      const mdRender = await RenderPlugin.String(result, "md");
+      return await mdRender(data);
     };
   }
 
-  config.addTemplateFormats(extension);
-  config.addExtension(extension, { compile });
+  config.addTemplateFormats([`md.${extension}`, extension]);
+  config.addExtension([`md.${extension}`, extension], {
+    compile,
+  });
 }
