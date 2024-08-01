@@ -8,6 +8,9 @@ import { defaultDelimiters } from "./default-delimiters.ts";
  * not expose its real type (yet), so `any` will do. */
 type EleventyConfig = any;
 
+/** The plugin, to add with `eleventyConfig.addPlugin(…)`, with an optional
+ * second argument to configure the plugin as described in the
+ * `EleventyTeXOptions` type. */
 export function EleventyTeX(
   config: EleventyConfig,
   options: EleventyTeXOptions = {},
@@ -31,6 +34,8 @@ export function EleventyTeX(
     const render: (content: string) => Promise<string> = texTemplateEngine
       ? await RenderPlugin.String(content, texTemplateEngine)
       : (content: string) => Promise.resolve(content);
+    const isMarkdown = path.endsWith(`.md.${extension}`) ||
+      path.endsWith(`.${extension}.md`);
     return async (data: any): Promise<string> => {
       const input = await render(data);
       let result = "";
@@ -65,14 +70,14 @@ export function EleventyTeX(
         lastCut = index;
       }
       result += input.slice(lastCut);
-      if (!path.endsWith(`.md.${extension}`)) return result;
+      if (!isMarkdown) return result;
       const mdRender = await RenderPlugin.String(result, "md");
       return await mdRender(data);
     };
   }
 
-  config.addTemplateFormats([`md.${extension}`, extension]);
-  config.addExtension([`md.${extension}`, extension], {
+  config.addTemplateFormats([`md.${extension}`, `${extension}.md`, extension]);
+  config.addExtension([`md.${extension}`, `${extension}.md`, extension], {
     compile,
   });
 }
