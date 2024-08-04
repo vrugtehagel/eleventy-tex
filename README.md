@@ -1,7 +1,7 @@
 # eleventy-tex
 
 This plugin provides build-time rendering of LaTeX files, by adding templating
-support for the `.tex` extension. Additionally, the `.md.tex` and `.tex.md`
+support for the `.tex` extension. Additionally, the `.md.tex` and `.texmd`
 extensions are added to allow for a more author-friendly TeX format. Those files
 are first processed by Liquid (similar to how Markdown does it), then TeX
 expressions are processed, and the result is rendered by MarkDown. To configure
@@ -42,9 +42,9 @@ export default function (eleventyConfig) {
 There are a handful of options available:
 
 - `extension`: The extension to process as TeX. Defaults to `"tex"`. Note that
-  this is also used for the `.md.tex` and `.tex.md` extensions; for example,
+  this is also used for the `.md.tex` and `.texmd` extensions; for example,
   when setting `extension: "latex"`, then the Markdown extensions become
-  `.md.latex` and `.latex.md`.
+  `.md.latex` and `.latexmd`.
 - `texTemplateEngine`: Like Markdown files, TeX files are first processed by a
   templating engine to allow things like using `{{ data }}`. By default, this is
   set to `"liquid"`. Similar to Markdown, it may be set to any templating
