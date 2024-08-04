@@ -80,17 +80,19 @@ export function EleventyTeX(
 
   config.addTemplateFormats([`md.${extension}`, `${extension}md`, extension]);
   config.addExtension([`md.${extension}`, `${extension}md`, extension], {
-    permalink: async function compile(
-      content: string,
-    ): Promise<(data: any) => Promise<string | false | null>> {
-      const render: (content: string) => Promise<string> = texTemplateEngine
-        ? await RenderPlugin.String(content, texTemplateEngine)
-        : (content: string) => Promise.resolve(content);
-      return async (data: any): Promise<string | false | null> => {
-        if (data.permalink === false) return false;
-        if (!data.permalink) return null;
-        return await render(data.permalink);
-      };
+    compileOptions: {
+      permalink: async function compile(
+        content: string,
+      ): Promise<(data: any) => Promise<string | false | null>> {
+        const render: (content: string) => Promise<string> = texTemplateEngine
+          ? await RenderPlugin.String(content, texTemplateEngine)
+          : (content: string) => Promise.resolve(content);
+        return async (data: any): Promise<string | false | null> => {
+          if (data.permalink === false) return false;
+          if (!data.permalink) return null;
+          return await render(data.permalink);
+        };
+      },
     },
     compile,
   });
