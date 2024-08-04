@@ -37,7 +37,7 @@ export function EleventyTeX(
     const isMarkdown = [
       `.md.${extension}`,
       `${extension}md`,
-    ].some(extension => path.endsWith(extension));
+    ].some((extension) => path.endsWith(extension));
     return async (data: any): Promise<string> => {
       const input = await render(data);
       let result = "";
@@ -80,7 +80,18 @@ export function EleventyTeX(
 
   config.addTemplateFormats([`md.${extension}`, `${extension}md`, extension]);
   config.addExtension([`md.${extension}`, `${extension}md`, extension], {
-    permalink: () => (data: any) => data?.permalink,
+    permalink: async function compile(
+      content: string,
+    ): Promise<(data: any) => Promise<string | false | null>> {
+      const render: (content: string) => Promise<string> = texTemplateEngine
+        ? await RenderPlugin.String(content, texTemplateEngine)
+        : (content: string) => Promise.resolve(content);
+      return async (data: any): Promise<string | false | null> => {
+        if (data.permalink === false) return false;
+        if (!data.permalink) return null;
+        return await render(data.permalink);
+      };
+    },
     compile,
   });
 }
