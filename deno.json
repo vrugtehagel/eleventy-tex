@@ -1,6 +1,6 @@
 {
   "name": "@vrugtehagel/eleventy-tex",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "exports": "./mod.ts",
   "publish": {
     "include": ["src/**", "mod.ts", "README.md"]
