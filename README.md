@@ -1,11 +1,12 @@
 # eleventy-tex
 
-This plugin provides build-time rendering of LaTeX files, by adding templating
-support for the `.tex` extension. Additionally, the `.md.tex` and `.texmd`
-extensions are added to allow for a more author-friendly TeX format. Those files
-are first processed by Liquid (similar to how Markdown does it), then TeX
-expressions are processed, and the result is rendered by MarkDown. To configure
-this behavior, see the options below.
+This plugin provides build-time rendering of LaTeX files. It introduces a
+transform to scan for and replace any TeX syntax after your files have been
+built, with the exception of Markdown files; for Markdown, the transform happens
+_before_ the file is transformed to HTML. This is because things such as $a_1 +
+a_2$ would first be transformed to $a&lt;em&g;1 + a&lt;em&gt;2$, which obviously
+would break the MathML output. You may turn off the TeX processing on a per-page
+basis by setting `ignoreTeX: true` in its front matter.
 
 ## Installation
 
@@ -41,14 +42,6 @@ export default function (eleventyConfig) {
 
 There are a handful of options available:
 
-- `extension`: The extension to process as TeX. Defaults to `"tex"`. Note that
-  this is also used for the `.md.tex` and `.texmd` extensions; for example, when
-  setting `extension: "latex"`, then the Markdown extensions become `.md.latex`
-  and `.latexmd`.
-- `texTemplateEngine`: Like Markdown files, TeX files are first processed by a
-  templating engine to allow things like using `{{ data }}`. By default, this is
-  set to `"liquid"`. Similar to Markdown, it may be set to any templating
-  engine, or `false` to disable this preprocessing altogether.
 - `delimiters`: An array of delimiters. By default, there are two inline
   delimiters, `\(…\)` and `$…$`, and two so-called "display" modes, `\[…\]` and
   `$$…$$`. It is possible to overwrite them, or import `defaultDelimiters` and

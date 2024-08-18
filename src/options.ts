@@ -1,13 +1,5 @@
 /** An options object. Every option is optional. */
 export type EleventyTeXOptions = {
-  /** The extension to use for LaTeX templates. Defaults to `.tex`. */
-  extension?: string;
-
-  /** A template engine to process the template with before rendering the math,
-   * similar to how Markdown files are pre-processed. Set to `false` to disable
-   * altogether. Like Markdown, defaults to `liquid`. */
-  texTemplateEngine?: false | string;
-
   /** These delimiters are used to find TeX inside the template. By default,
    * the delimiters `\(…\)` and `$…$` are used for inline math, and `\[…\]`
    * and `$$…$$` for display math. Note that, if you define your own, they
