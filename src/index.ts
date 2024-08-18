@@ -1,4 +1,3 @@
-import { RenderPlugin } from "npm:@11ty/eleventy@^3.0.0-beta.1";
 import katex from "npm:katex@^0.16.11";
 
 import type { EleventyTeXOptions } from "./options.ts";
@@ -25,7 +24,7 @@ export function EleventyTeX(
   katexOptions.throwOnError ??= false;
   katexOptions.output ??= "mathml";
 
-  async function processTeX(input: string): string {
+  function processTeX(input: string): string {
     let result = "";
     let lastCut = 0;
     for (let index = 0; index < input.length; index++) {
@@ -78,7 +77,7 @@ export function EleventyTeX(
     "*",
     "liquid",
     "njk",
-  ], (data: any, content: string): string | null => {
+  ], (data: any): string | null => {
     if (data.ignoreTeX || data.ignoreTex) ignore.add(data.page.inputPath);
     return null;
   });
