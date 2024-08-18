@@ -62,28 +62,27 @@ export function EleventyTeX(
     return result;
   }
 
-  const ignore = new Set<string>();
-
-  config.addPreprocessor("eleventy-tex-md", "md", (
-    data: any,
-    content: string,
-  ): string | null => {
-    ignore.add(data.inputPath);
-    if (data.ignoreTeX || data.ignoreTex) return null;
-    return processTeX(content);
-  });
+  const ignored = new Set<string>();
 
   config.addPreprocessor("eleventy-tex-md", [
     "*",
+    "md",
     "liquid",
     "njk",
-  ], (data: any): string | null => {
-    if (data.ignoreTeX || data.ignoreTex) ignore.add(data.page.inputPath);
-    return null;
+  ], (
+    data: any,
+    content: string,
+  ): string | null => {
+    const ignore = data.ignoreTeX || data.ignoreTex;
+    const path = data.page.inputPath;
+    if (!ignore && !path.endsWith(".md")) return null;
+    ignored.add(data.page.inputPath);
+    if (ignore) return null;
+    return processTeX(content);
   });
 
   config.addTransform("tex", function (this: any, content: string): string {
-    if (ignore.has(this.inputPath)) return content;
+    if (ignored.has(this.inputPath)) return content;
     return processTeX(content);
   });
 }
