@@ -3,10 +3,10 @@
 This plugin provides build-time rendering of LaTeX files. It introduces a
 transform to scan for and replace any TeX syntax after your files have been
 built, with the exception of Markdown files; for Markdown, the transform happens
-_before_ the file is transformed to HTML. This is because things such as `$a_1 +
-a_2$` would first be transformed to `$a<em>1 + a</em>2$`, which obviously
-would break the MathML output. You may turn off the TeX processing on a per-page
-basis by setting `ignoreTeX: true` in its front matter.
+_before_ the file is transformed to HTML. This is because things such as
+`$a_1 + a_2$` would first be transformed to `$a<em>1 + a</em>2$`, which
+obviously would break the MathML output. You may turn off the TeX processing on
+a per-page basis by setting `ignoreTeX: true` in its front matter.
 
 ## Installation
 

@@ -38,23 +38,32 @@ export function EleventyTeX(
         index += delimiter.start.length - 1;
         continue;
       }
-      result += input.slice(lastCut, index);
+      const options = { ...katexOptions, ...delimiter.katexOptions };
       index += delimiter.start.length;
       let endIndex = index;
-      do {
-        endIndex = input.indexOf(delimiter.end, endIndex);
-      } while (input[endIndex - 1] == "\\");
-      if (endIndex == -1) {
-        console.warn(`Found a ${delimiter.start} without ${delimiter.end}`);
-        continue;
-      }
-      const math = input.slice(index, endIndex);
-      const options = { ...katexOptions, ...delimiter.katexOptions };
-      if (!options.displayMode && math.includes("\n")) {
-        result += math;
+      if (options.displayMode) {
+        do {
+          endIndex = input.indexOf(delimiter.end, endIndex);
+        } while (input[endIndex - 1] == "\\");
+        if (endIndex == -1) {
+          result += input.slice(lastCut, index);
+          lastCut = index;
+          continue;
+        }
       } else {
-        result += katex.renderToString(math, options);
+        const newlineIndex = input.indexOf("\n", index);
+        do {
+          endIndex = input.indexOf(delimiter.end, endIndex);
+        } while (input[endIndex - 1] == "\\" && endIndex < newlineIndex);
+        if (endIndex >= newlineIndex || endIndex == -1) {
+          result += input.slice(lastCut, index);
+          lastCut = index;
+          continue;
+        }
       }
+      result += input.slice(lastCut, index - delimiter.start.length);
+      const math = input.slice(index, endIndex);
+      result += katex.renderToString(math, options);
       index = endIndex + delimiter.end.length;
       lastCut = index;
     }
